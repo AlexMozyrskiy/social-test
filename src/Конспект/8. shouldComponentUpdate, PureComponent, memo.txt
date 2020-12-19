@@ -1,0 +1,64 @@
+1. shouldComponentUpdate()  - метод жизненго цикла классового компонента. Если вернет true Virtual DOM компонента перерисуется,
+ если false нет
+ Пример использования:
+
+ class ProfilePageUserContainer extends React.Component {
+    
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextProps !== this.props || nextState !== this.state;
+    }
+
+    componentDidMount() {
+        console.log("ProfilePageUserContainer componentDidMount");
+        this.props.profilePageGetUserThunkCreator(this.props.match.params.userId);
+        this.props.profilePageGetUserStatusThunkCreator(this.props.match.params.userId);
+    }
+
+    render() {
+        console.log("ProfilePageUserContainer render(")
+        if(!this.props.isAuth) {
+            return <Redirect to="/login" />
+        }
+        return (
+            <ProfilePageUser
+                {...props}
+            />
+        );
+    }
+}
+
+2. PureComponent - класс React от которого можно отнаследоваться и в нем не надо орисывать метод shouldComponentUpdate(nextProps, nextState),
+ добрые дяди сделали это за нас
+ Пример использования:
+
+ class ProfilePageUserContainer extends React.PureComponent {
+    
+    /* shouldComponentUpdate(nextProps, nextState) {
+        return nextProps !== this.props || nextState !== this.state;
+    } */
+
+    componentDidMount() {
+        console.log("ProfilePageUserContainer componentDidMount");
+        this.props.profilePageGetUserThunkCreator(this.props.match.params.userId);
+        this.props.profilePageGetUserStatusThunkCreator(this.props.match.params.userId);
+    }
+
+    render() {
+        console.log("ProfilePageUserContainer render(")
+        if(!this.props.isAuth) {
+            return <Redirect to="/login" />
+        }
+        return (
+            <ProfilePageUser
+                {...props}
+            />
+        );
+    }
+}
+
+3. React.memo - метод React. Передав в этот метод ФУНКЦИОНАЛЬНЫЙ компонент он сделает ту же работу что и shouldComponentUpdate()
+ или PureComponent.
+ Пример использования:
+ const ProfilePageUserContainer = React.memo(props => {
+     return "Some JSX"
+ });

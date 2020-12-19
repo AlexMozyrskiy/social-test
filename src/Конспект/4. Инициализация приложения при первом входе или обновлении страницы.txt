@@ -1,0 +1,84 @@
+Первоночальная инициализация приложения при первом входе или обновлении страницы
+
+1. Делаем из компонента App.jsx классовый, коннектим его
+
+import React from "react";
+import './App.css';
+import { Route } from "react-router-dom";
+import HeaderContainer from './Components/Header/HeaderContainer';
+import SideBar from './Components/SideBar/SideBar';
+import ProfilePage from './Components/Content/ProfilePage/ProfilePage';
+import DialogsPage from './Components/Content/DialogsPage/DialogsPage';
+import MusicPage from './Components/Content/MusicPage/MusicPage';
+import NewsPage from './Components/Content/NewsPage/NewsPage';
+import SettingsPage from './Components/Content/SettingsPage/SettingsPage';
+import UsersPageContainer from './Components/Content/UsersPage/UsersPageContainer';
+import LoginPageFormContainer from "./Components/Content/LoginPage/LoginPageForm/LoginPageFormContainer";
+import { connect } from 'react-redux';
+import { initializedAppThunkCreator } from "./Redux/ThunkCreators/initializedAppThunkCreator";
+import Preloader from "./Components/common/Preloader/Preloader";
+
+class App extends React.Component {
+
+  componentDidMount() {
+    this.props.initializedAppThunkCreator();
+  }
+
+  render() {
+    if(!this.props.isAppInitialized) {              // отображаем прелоадер пока приложение иниализируется (пока придутт все ответы от сервера), чтобы не было скачков от страницы к странице, так как изначально приложение считает нас не авторизованными
+      return <Preloader />
+    }
+    return (
+      <div className="App">
+        <HeaderContainer />
+        <SideBar />
+
+        <Route path='/profile/:userId?' render={() => <ProfilePage />} />
+        <Route path='/dialogs' render={() => <DialogsPage />} />
+        <Route path='/music' render={() => <MusicPage />} />
+        <Route path='/news' render={() => <NewsPage />} />
+        <Route path='/users' render={() => <UsersPageContainer />} />
+        <Route path='/settings' render={() => <SettingsPage />} />
+        <Route path='/login' render={() => <LoginPageFormContainer />} />
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return (
+    {isAppInitialized: state.initializedApp.isInizializeApp}
+  );
+}
+
+export default connect(mapStateToProps, { initializedAppThunkCreator })(App);
+
+
+2. Создаем новый ThunkCreator который будет диспатчить в стейт пришли ли ответы от сервера(то есть исполнились ли промисы)
+    import { headerIsAuthThunkCreator } from "./headerThunkCreators";
+    import { initializedAppActionCreator } from "./../ActionCreators/initializedAppActionCreator";
+
+    export const initializedAppThunkCreator = () => (dispatch) => {
+        let dispatchResult = dispatch(headerIsAuthThunkCreator());                  // ответ от промиса который получает от сервера ответ залогинен ли пользователь. Чтобы от диспатчи после выполенния чтото пришло надо сделать ретурн then'а в санке, смотри следующий пункт
+
+        Promise.all([dispatchResult])                                               // когда все ответы от промисов получены
+            .then(() => {
+                dispatch(initializedAppActionCreator());                            // переписывае в стейте с false на true приложение инициализировано
+            });
+}
+
+3. чтобы после выпонения санки и асинхронных запросов на сервак из санки чтото вренулось надо заретурнить выполнение then'а в санке:
+
+    export const headerIsAuthThunkCreator = () => (dispatch) => {
+        dispatch(preloaderActive(true));
+
+        return headerAPI.isAuth()
+            .then(data => {
+                dispatch(preloaderActive(false));
+                if (data.resultCode === 0) {
+                    const { email, id, login } = data.data;
+                    const isLoggedIn = true;
+                    dispatch(setUserDataIntoState(email, id, login, isLoggedIn));
+                }
+            });
+    }

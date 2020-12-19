@@ -1,0 +1,30 @@
+<div className="profile-page">
+
+    <img src={poster} alt="poster" className="profile-page__poster" />
+
+    <div className="profile-page__user-grid_wrapper">
+        <img src={avatar} alt="avatar" className="profile-page__avatar" />
+
+        <div className="profile-page__user-info">
+            <div className="profile-page__user-name">Name: {props.name}</div>
+            <div className="profile-page__user-birth_day">About Me: {props.aboutMe}</div>
+            <div className="profile-page__user-city">{props.lookingForAJob ? 'Я ищу работу' : 'Я не ищу работу'}</div>
+        </div>
+    </div>
+
+    <h3>My Posts</h3>
+
+    <div className="profile-page__form">
+
+        <textarea placeholder='type your Post' className="profile-page__textarea" value={props.typingMessage}
+            onChange={typingMessageForRewriting}></textarea>
+
+        <button className="profile-page__button" onClick={props.profilePageSavePostInState}>Send</button>
+
+    </div>
+
+    <ul className="profile-page__posts">
+        <li key={post.id} className="profile-page__single-post">{ post.text }</li>
+    </ul>
+
+</div>

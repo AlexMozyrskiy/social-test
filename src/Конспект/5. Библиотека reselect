@@ -1,0 +1,12 @@
+1. npm i reselect
+2. Создаем умный селектор с помощью библиотеки reselect:
+
+    import { createSelector } from "reselect";
+
+    const getUsersSelector = (state) => {
+        return state.usersPage.users;
+    }
+
+    export const getUsersSuperSelector = createSelector(getUsersSelector, (users) => {     // в createSelector первым параметром передаем обычный селектор, потом выполняем функцию, в ней производим все вычисления, если после вычислений данные остались такими де как при предыдущем вычислении перерисовка страницы не производится
+        return users.filter(user => true);
+    });

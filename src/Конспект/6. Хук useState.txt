@@ -1,0 +1,17 @@
+1. Используется для созлания локального стейта
+
+2. В функциональной компоненте импортируем import { useState } from "react";
+
+3. Перед ретурном: let [isStatusEditModeActive, changeIsStatusEditModeActive] = useState(false);   
+// после использование useState он вернет массив с 2мя значениями: 0 значение в массиве - параметр который 
+мы передали при сохдании хука, в данном случае false, 1 значение в массиве - функция, которая может менять 0 значение в массиве
+
+4. Если необходимо передаем дальше по пропсам isStatusEditModeActive, changeIsStatusEditModeActive
+
+5. Чтобы поменять значение в хуке: onDoubleClick={ ()=>props.changeIsStatusEditModeActive(true) }
+
+6. Если в функции при клмке необхзодимо ваыполнение нескольких действий надо создавать отделную функцию и вызывать ее при коике, например:
+    function deActivateEditMode(message) {
+        changeIsStatusEditModeActive(false)
+        props.profilePageUpdateUserStatusThunkCreator(message);
+    }

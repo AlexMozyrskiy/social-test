@@ -1,0 +1,8 @@
+Деплой приложения на хостинг гит хаб пейджес
+
+1. npm install gh-pages --save-dev
+2. В файл package.json в корень объекта втсавляем адрес сайта на GH:
+    "homepage": "https://alexmozyrskiy.github.io/social-network"
+3.  В файл package.json в объект "scripts" вставляем:
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"

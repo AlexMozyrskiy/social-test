@@ -1,0 +1,16 @@
+1. Используется для запуска когда только при изменении указанного свойства в стейте
+
+2. В функциональной компоненте импортируем import { useEffect } from "react";
+
+3. useEffect( () => {
+        props.profilePageGetUserThunkCreator(props.match.params.userId);
+        props.profilePageGetUserStatusThunkCreator(props.match.params.userId);
+        changeTypingStatus(props.userGlobalStateStatus);
+    }, [props.userGlobalStateStatus] );
+
+Первый аргумент функция которая выпонится первый раз при закрузке или обновлении страницы, 
+второй аргумент массив свойств из стейта при измении которых она будет выполнятся еще раз
+
+useEffect выполняется после первого монтирования компоненты, как метод componentDidMount() в классовой компоненте
+
+Хуки нельзя использовать в условии (if), в циклах

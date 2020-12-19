@@ -1,0 +1,66 @@
+Создание формы с помощью redux-form
+
+1. Создаем контейнерный компонент:
+
+import React from "react";
+import LoginPage from "./../LoginPage";
+
+class LoginPageFormContainer extends React.Component {
+
+    onSubmit(formData) {
+        console.log(formData);
+        // тут действия которые выполнятся при сабмите формы
+    }
+
+    render() { 
+        return (
+            <LoginPage onSubmit={this.onSubmit.bind(this)} />
+        );
+    }
+}
+
+export default LoginPageFormContainer;
+
+В нем определяем метод onSubmit, тут можно будет в дальнейшем через манку диспатчить чтото в стейт и дальше делать запросы на сервак
+передаем этот метод дальще по пропсам, не забываем биндить this
+
+2. Создаем функциональную(чистую) компоненту:
+
+import React from "react"
+import LoginReduxForm from "./LoginPageForm/LoginPageReduxForm";
+
+const LoginPage = (props) => {
+    return (
+        <div className="login-page">
+            <h2>Login</h2>
+
+            <LoginReduxForm onSubmit={props.onSubmit} />
+        </div>
+    );
+}
+
+export default LoginPage;
+Не забываем передать дальше метод onSubmit в компонент отвечающий за форму
+
+3.Создаем компонент отвечающий за отрисовку и обработку формы:
+
+import React from "react";
+import { Field, reduxForm } from "redux-form";
+
+const LoginPageForm = (props) => {
+    return (
+        <form onSubmit={props.handleSubmit}>
+            <Field component="input" name="login" type="text" placeholder="Enter your Login" />
+            <Field component="input" name="password" type="password" placeholder="Enter your Password" />
+            <Field component="input" name="rememberMe" type="checkbox" /> remember me
+            <button>Login</button>
+        </form>
+    );
+}
+
+export default 
+    reduxForm({
+        // a uniq name for the form
+        form: "login"
+    })
+(LoginPageForm);

@@ -1,0 +1,38 @@
+1. В App в импортах вместо обычного импорта компнента пишем:
+    // import ProfilePage from './Components/Content/ProfilePage/ProfilePage';
+
+    const ProfilePage = React.lazy( () => import('./Components/Content/ProfilePage/ProfilePage') );
+
+2. В коде App компонента пишем вместо:
+    { /*<Route path='/profile' render={() => <ProfilePage />} /> */ }
+
+    <Route path='/profile/:userId?' render={ () => {
+        return <React.Suspense fallback={ <Preloader /> }>
+        <ProfilePage />
+        </React.Suspense>
+    } } />
+
+3. Теперь компонент <ProfilePage /> не будет загружать при первоначальной загрузке приложения, а в момент перехода на него
+Lazy - ленивая загрузка,
+Suspense - ожидание
+fallback={ <Preloader /> } - что будет показано пока компонент <ProfilePage /> загружается
+
+4. Чтобы уменьшить код в App.js создакм HOC:
+    import React from "react";
+    import Preloader from "../Components/common/Preloader/Preloader";
+
+    export const withLazySuspense = (Component) => (props) => {
+        return <React.Suspense fallback={<Preloader />}>
+            <Component {...props} />
+        </React.Suspense>;
+    }
+
+5. В App.js вместо
+    { /* <Route path='/profile/:userId?' render={ () => {
+        return <React.Suspense fallback={ <Preloader /> }>
+        <ProfilePage />
+        </React.Suspense>
+    } } /> */ }
+
+    пишем:
+    <Route path='/profile/:userId?' render={ withLazySuspense(ProfilePage) } />

@@ -1,0 +1,44 @@
+Валидация формы с помощью redux-form.
+
+1. В src создаём папку utils/validators (названия папок можно выбрать другие)
+2. В папке validators создаем файл validators.js с кодом валидатора (структура тут может быть любой).
+3. В файле  validators.js пишем код:
+
+    export const requiredField = (value) => {          // поле обязательно для заполнения
+        if(value) return undefined;
+        return "Field is required";
+    }
+
+    export const maxLengthCreator = (maxLenght) => (value) => {         // максимальная длина строки символов
+        if(value && value.length > maxLenght){
+            return `Max Lenght is ${maxLenght} symbols`;
+        }
+        return undefined;
+    }
+
+4. В функциональной компоненте где отрисовывается тег Field добавляем атрибут validate с функциями из файла validators.js. 
+    Так как функция maxLengthCreator создана с использованием замыкания в фугкциональной компоненте создадим консатнту const maxLength10 = maxLengthCreator(10),
+    иначе если напрямую вызвать функцию maxLengthCreator(10) произойдет зацикливание её вызова
+
+    <Field placeholder="type your Post" component="textarea" name="post" type="text" validate={[requiredField, maxLength10]} />
+
+5. В теге Field используется атрибут component, он подсказывает redux-form какой тег отрисовать, но наравне со стандартными тегами мы можем использовать и свои компоненты.
+    В папаке src/Components/common создаем папку FormsControls (название папки произвольное), в этой папке создаём файл ProfilePageMessageTextarea.jsx которые будем передавть в 
+    атрибут component в Field.
+    Файл ProfilePageMessageTextarea.jsx:
+
+        import React from "react";
+
+        const ProfilePageMessageTextarea = ({input, meta, ...props}) => {   // деструктуризируем полученные данные из пропсов
+            return ( <div className={ meta.error && meta.touched ? "profile-page__textarea" : ""}>      {/* если ошибка добавим класс ошибки */}
+                        <textarea {...input} {...props} />              {/* передаем Field'у вызывавшему этот компонент нужные ему данные */}
+                        { meta.error && meta.touched && <span className="profile-page__error-text">some error</span> } {/* если ошибка добавим сообщение ошибки */}
+                    </div>
+            );
+        }
+
+        // В meta.error сидит наше сообщение которое мы поставили в случае неудачного прохождения валидации
+
+        export default ProfilePageMessageTextarea;
+
+    В теге Field теперь в атрибуте component используем ProfilePageMessageTextarea, не забыв его импортировать вверху файла с тегом Field

@@ -1,0 +1,14 @@
+Предупрждение в случае неправильного ввода логина или пароля с помощью redux-form
+
+1. В Thunk-Creator'е отвечающем за логин импортируем import { stopSubmit } from "redux-form", в условии if(data.resultCode === 0) в else пишем:
+    import { stopSubmit } from "redux-form";
+
+    if(data.resultCode === 0) {
+        dispatch(headerIsAuthThunkCreator())
+    } else {
+        const errorMessge = data.messages.length > 0 ? data.messages[0] : "Some Error";
+        dispatch(stopSubmit("login", {_error: errorMessge}));                             // первый параметр ("login") - это имя формы к кторой булет применен этот stopSubmit, второй парамет имя поля в котором будет рисоваться ошибка, в данном случае стоит _error это ошибка не привязанная ни к одному полю, просто в props.error теперь будет сообщение пришедшее с сервака. Тут вместо _error можно было указать имя поля например password и сообщение привязалось бы к полю ввода пароля
+    }
+
+2. В Компоненте отвечающим за логин добавляем строчку
+    { props.error && <p className="login-page__error">{ props.error }</p> }
